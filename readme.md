@@ -1,9 +1,38 @@
-Employee ID: T2551
+Employee ID: T2551 <br>
 Employee Name: Varun Sharma
 
 # Employee/Department Management Based CRUD APIs
 
 This project contains employee informations and perform CRUD APIs
+
+### Install and Run Redis for Caching
+
+####Install
+```markdown
+brew install redis
+```
+####Run the server
+```markdown
+brew services start redis
+```
+#### Monitor Redis
+```markdown
+redis-cli MONITOR
+```
+###Run Tests
+```markdown
+mvn test
+```
+###Run the application
+```markdown
+mvn spring-boot:run
+```
+
+Alternatively, you can also navigate to target directory and run the application using
+```markdown
+cd target
+java -jar emp-api-0.0.1-SNAPSHOT.jar
+```
 
 ## Operations on Employee
 
@@ -27,6 +56,16 @@ curl http://localhost:8083/api/employee/id/{{empId}}
 curl http://localhost:8083/api/employee/dept/{{deptId}}
 ```
 
+### POST Requests
+
+#### Add a new Employee
+
+```markdown
+curl -X POST -H "Content-Type:application/json" \
+ -d '{"name":"Varun","email":"varun@gmail.com","dob":"2000-16-10","deptId":1}' \
+ http://localhost:8083/api/employee
+```
+
 ### PUT Requests
 
 #### Update an Employee
@@ -43,16 +82,6 @@ curl -X PUT http://localhost:8083/api/employee/<id>?name=<name>&email=<email>&de
 curl -X DELETE http://localhost:8083/api/employee/<id>
 ```
 
-### POST Requests
-
-#### Add a new Employee
-
-```markdown
-curl -X POST -H "Content-Type:application/json" \
- -d '{"name":"Harsh","email":"xyz@gmail.com","dob":"2000-01-01","deptId":1}' \
- http://localhost:8083/api/employee
-```
-
 ## Operations on Depertmant
 
 ### GET Requests
@@ -66,7 +95,7 @@ curl http://localhost:8083/api/department
 #### Get Department by id
 
 ```markdown
-curl http://localhost:8083/api/department/{{deptId}
+curl http://localhost:8083/api/department/{{deptId}}
 ```
 
 ### POST Requests
@@ -75,7 +104,7 @@ curl http://localhost:8083/api/department/{{deptId}
 
 ```markdown
 curl -X POST -H "Content-Type:application/json" \
- -d '{"name":"Payments","manager":"qwerty"}' \
+ -d '{"name":"FASTag","manager":"abc"}' \
  http://localhost:8083/api/department
 ```
 
