@@ -7,6 +7,9 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.models.Department;
@@ -28,25 +31,32 @@ public class DepartmentService {
 		this.employeeRepository = employeeRepository;
 	}
 	
+	@Cacheable(value = "departments")
 	public List<Department> getAllDepartments(){
 		return departmentRepository.findAll();
 	}
 	
+	@Cacheable(value = "departments",key = "#id")
 	public Optional<Department> getDeptById(Integer id){
 		return departmentRepository.findById(id);
 	}
 	
+	@CachePut(value = "departments", key="#department.id")
 	public void createNewDepartment(Department department) {
-		boolean exists = departmentRepository.existsById(department.getId());
-		if(exists) {
+		Optional<Department> departmentByName = departmentRepository.findDepartmentByName(department.getName());
+		if(departmentByName.isPresent()) {
 			LOGGER.error("Department with "+ department.getId()+ " already exists. ");
 			throw new IllegalStateException("Department with " + department.getId()+" already exists.");
 		}else {
+			for(Employee employee:department.getEmployeeList()) {
+				employee.setDepartment(department);
+			}
 			departmentRepository.save(department);
 			LOGGER.info("Department created successfully");
 		}
 	}
 	
+	@CacheEvict(value= "departments")
 	public void deleteDepartment(Integer id) {
 		boolean exists = departmentRepository.existsById(id);
 		if(!exists) {
@@ -56,7 +66,7 @@ public class DepartmentService {
 			List<Employee> employees = employeeRepository.findEmployeeByDept(id);
 			if(employees.size()>0) {
 				for(Employee e:employees) {
-					e.setDeptId(0);
+					e.setDepartment(null);
 				}
 			}
 			departmentRepository.deleteById(id);
@@ -65,6 +75,7 @@ public class DepartmentService {
 	}
 	
 	@Transactional
+	@CachePut(value = "departments", key="#id")
 	public void updateDepartment(Integer id, String name, String manager) {
 		Department department = departmentRepository.findById(id).orElseThrow(
 				()->new IllegalStateException("Department with "+id+" does not exixts.")

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.models.Employee;
-import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.EmployeeRepository;
 
 import static com.example.demo.VarunApplication.LOGGER;
@@ -18,11 +17,9 @@ import static com.example.demo.VarunApplication.LOGGER;
 @Service
 public class EmployeeService {
 	private final EmployeeRepository employeeRepository;
-	private final DepartmentRepository departmentRepository;
 	@Autowired
-	public EmployeeService(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
+	public EmployeeService(EmployeeRepository employeeRepository) {
 		this.employeeRepository = employeeRepository;
-		this.departmentRepository = departmentRepository;
 	}
 	
 	public List<Employee> getAllEmployees(){
@@ -60,7 +57,7 @@ public class EmployeeService {
 	}
 	
 	@Transactional
-	public void updateEmployee(Integer id, String name, String email, Integer deptId) {
+	public void updateEmployee(Integer id, String name, String email) {
 		Employee employee=employeeRepository.findById(id).orElseThrow(
 				()->new IllegalStateException("Employee with "+id+" does not exists.")
 		);
@@ -73,14 +70,6 @@ public class EmployeeService {
 				throw new IllegalStateException("Employee with this email already exists.");
 			}else {
 				employee.setEmail(email);
-			}
-		}
-		if(deptId!=null && !Objects.equals(employee.getDeptId(), deptId)) {
-			boolean exists = departmentRepository.existsById(deptId);
-			if(!exists) {
-				throw new IllegalStateException("Department with"+deptId+" not exists.");
-			}else {
-				employee.setDeptId(deptId);
 			}
 		}
 		LOGGER.info("Employee details updated successfully");	

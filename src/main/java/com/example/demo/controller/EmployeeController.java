@@ -57,10 +57,9 @@ public class EmployeeController {
 	public void updateEmployee(
 			@PathVariable("empId") Integer id,
 			@RequestParam(required = false)String name,
-			@RequestParam(required = false)String email,
-			@RequestParam(required = false)Integer deptId
+			@RequestParam(required = false)String email
 	) {
-		employeeService.updateEmployee(id, name, email, deptId);
+		employeeService.updateEmployee(id, name, email);
 	}
 	
 	@DeleteMapping(path="{empId}")

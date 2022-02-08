@@ -1,10 +1,13 @@
 package com.example.demo.models;
 
+import java.io.Serializable;
+import java.util.List;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name="department")
-public class Department {
+public class Department implements Serializable{
 	@Id
 	@SequenceGenerator(
 			name="department_sequence",
@@ -20,6 +23,9 @@ public class Department {
 	private String name;
 	private String manager;
 	
+	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<Employee> employeeList;
+	
 	public Department() {
 		
 	}
@@ -28,7 +34,17 @@ public class Department {
 		this.name = name;
 		this.manager = manager;
 	}
+	
+	public Department(String name, String manager, List<Employee> employeeList) {
+		this.name = name;
+		this.manager = manager;
+		this.employeeList = employeeList;
+	}
 
+	public void setEmployeeList(List<Employee> employeeList) {
+		this.employeeList = employeeList;
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -51,6 +67,10 @@ public class Department {
 
 	public void setManager(String manager) {
 		this.manager = manager;
+	}
+	
+	public List<Employee> getEmployeeList(){
+		return employeeList;
 	}
 	
 	@Override

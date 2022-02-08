@@ -1,12 +1,15 @@
 package com.example.demo.models;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="employee")
-public class Employee {
+public class Employee implements Serializable{
 	@Id
 	@SequenceGenerator(
 			name="employee_sequence",
@@ -22,20 +25,22 @@ public class Employee {
 	private String name;
 	private String email;
 	private LocalDate dob;
-	private int deptId;
 	@Transient
 	private int age;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JsonIgnore
+	@JoinColumn(name = "dept_id")
+	private Department department;
 	
 	public Employee() {
 		
 	}
 
-	public Employee(String name, String email, LocalDate dob, int deptId) {
-		super();
+	public Employee(String name, String email, LocalDate dob) {
 		this.name = name;
 		this.email = email;
 		this.dob = dob;
-		this.deptId = deptId;
 	}
 
 
@@ -72,20 +77,21 @@ public class Employee {
 		this.dob = dob;
 	}
 
-	public int getDeptId() {
-		return deptId;
-	}
-
-	public void setDeptId(int deptId) {
-		this.deptId = deptId;
-	}
-
 	public int getAge() {
 		return Period.between(this.dob, LocalDate.now()).getYears();
 	}
 
 	public void setAge(int age) {
 		this.age = age;
+	}
+	
+	public void setDepartment(Department department) {
+		this.department = department;
+		
+	}
+	
+	public Department getDepartment() {
+		return department;
 	}
 	
 	@Override
@@ -96,7 +102,6 @@ public class Employee {
 				", email='" + email + '\'' +
 				", dob=" + dob + 
 				", age=" + age + 
-				", deptId=" + deptId +
 				'}';
 	}
 }
